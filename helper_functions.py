@@ -61,7 +61,6 @@ def fit_polynomial_ls(x_t_pairs: torch.Tensor, m: int) -> torch.Tensor:
     return w_hat
 
 
-
 def fit_polynomial_sgd():
     pass
 
