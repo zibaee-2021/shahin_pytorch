@@ -1,53 +1,41 @@
-"""
-Task 1 Stochastic Minibatch Gradient Descent for Linear Models
+import numpy as np
+import torch
+import helper_functions as hfuncs
 
-Implement a polynomial function polynomial_fun, that takes two input arguments, a weight vector 𝐰
-of size 𝑀 + 1 and an input scalar variable 𝑥, and returns the function value 𝑦.
-The polynomial_fun should be vectorised for multiple pairs of scalar input and output,
-with the same 𝐰. [5]
 
-Using the linear algebra modules in TensorFlow/PyTorch, implement a least square solver for fitting
-the polynomial functions, fit_polynomial_ls, which takes 𝑁 pairs of 𝑥 and target values 𝑡 as input, with
-an additional input argument to specify the polynomial degree 𝑀, and returns the optimum weight
-vector hat_𝐰 ̂in least-square sense, i.e. ‖𝑡 − 𝑦‖2 is minimised. [5]
+if __name__ == '__main__':
 
-Using relevant functions/modules in TensorFlow/PyTorch, implement a stochastic minibatch gradient
-descent algorithm for fitting the polynomial functions, fit_polynomial_sgd, which has the same input
-arguments as fit_polynomial_ls does, with additional two input arguments, learning rate and
-minibatch size. This function also returns the optimum weight vector hat_𝐰. During training, the function
-should report the loss periodically using printed messages. [5]
+    w = np.array([[1], [2], [3]])
+    w = hfuncs.convert_to_tensor(w)
 
-Implement a task script “task.py”, under folder “task1”, performing the following: [15]
+    # Generate training set:
+    train_20_x = np.random.uniform(low=-20, high=20, size=20).reshape(-1, 1)
+    train_20_x = hfuncs.convert_to_tensor(train_20_x)
 
-o Use polynomial_fun (𝑀 = 2, 𝐰 = [1,2,3]T) to generate a training set and a test set, in the
-form of respectively and uniformly sampled 20 and 10 pairs of 𝑥, 𝑥𝜖[−20, 20], and 𝑡. The
-observed 𝑡 values are obtained by adding Gaussian noise (standard deviation being 0.5) to 𝑦.
-o Use fit_polynomial_ls (𝑀𝜖{2,3,4}) to compute the optimum weight vector hat_w using the training set.
-For each 𝑀, compute the predicted target values 𝑦 ̂ for all 𝑥 in both the training
-and test sets.
+    # Generate test set:
+    test_10_x = np.random.uniform(low=-20, high=20, size=10).reshape(-1, 1)
+    test_10_x = hfuncs.convert_to_tensor(test_10_x)
 
-o Report, using printed messages, the mean (and standard deviation) in difference a) between
-the observed training data and the underlying “true” polynomial curve; and b) between the
-“LS-predicted” values and the underlying “true” polynomial curve.
+    # Generate observed ("target") values, using polynomial function and Gaussian noise:
+    train_20_y = hfuncs.polynomial_fun(w, train_20_x)
+    train_20_t = torch.randn_like(train_20_y) * 0.5 + train_20_y
+    # train_20_t = np.random.normal(loc=train_20_y, scale=0.5)
 
-o Use fit_polynomial_sgd (𝑀𝜖{2,3,4}) to optimise the weight vector 𝐰
-̂ using the training set.
-For each 𝑀, compute the predicted target values 𝑦
-̂ for all 𝑥 in both the training and test sets.
+    test_10_y = hfuncs.polynomial_fun(w, test_10_x)
+    test_10_t = torch.randn_like(test_10_y) * 0.5 + test_10_y
+    # test_10_t = np.random.normal(loc=test_10_y, scale=0.5)
 
-o Report, using printed messages, the mean (and standard deviation) in difference between the
-“SGD-predicted” values and the underlying “true” polynomial curve.
+    # Compute optimum weight vector:
+    # x_t_pairs = np.concatenate((train_20_x, train_20_t), axis=1)
+    x_t_pairs = torch.cat((train_20_x, train_20_t), dim=1)
 
-o Compare the accuracy of your implementation using the two methods with ground-truth on
-test set and report the root-mean-square-errors (RMSEs) in both 𝐰 and 𝑦 using printed
-messages.
+    w_hats = list()
 
-o Compare the speed of the two methods and report time spent in fitting/training (in seconds)
-using printed messages.
-• Implement a task script “task1a.py”, under folder “task1”. [10]
+    for i in [2, 3, 4]:
+        w_hat = hfuncs.fit_polynomial_ls(x_t_pairs=x_t_pairs, m=i)
+        y_preds_train = hfuncs.polynomial_fun(w=w_hat, x=train_20_x)
+        y_preds_test = hfuncs.polynomial_fun(w=w_hat, x=test_10_x)
 
-o Experiment how to make 𝑀 a learnable model parameter and using SGD to optimise this more
-flexible model.
-o Report, using printed messages, the optimised 𝑀 value and the mean (and standard deviation) in
-difference between the model-predicted values and the underlying “true” polynomial curve.
-"""
+        w_hats.append(w_hat)
+
+    pass
