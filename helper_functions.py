@@ -100,7 +100,7 @@ def fit_polynomial_sgd(x_t_pairs: torch.Tensor, m: int, lr=0.001, mb_size=2) -> 
 
     ds = TensorDataset(x, t)
     dataloader = DataLoader(dataset=ds, batch_size=mb_size, shuffle=True)
-    num_epochs = 5000
+    num_epochs = 200
     losses = list()
     loss = 0
 
@@ -122,11 +122,6 @@ def fit_polynomial_sgd(x_t_pairs: torch.Tensor, m: int, lr=0.001, mb_size=2) -> 
             # print(f'Epoch [{epoch + 1} / {num_epochs}], Batch [{batch_i + 1} / {len(dataloader)}], Loss: {loss.item()}')
 
         losses.append(loss.item())
-        # Evaluation using test set:
-        with torch.no_grad():  # Ensure no gradient computation for test data
-            y_test_pred = model(test_x)  # Forward pass with test data
-            test_loss = criterion(y_test_pred, test_t)  # Calculate loss on test data
-        print(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {loss.item()}, Test Loss: {test_loss.item()}')
 
         print(f'Epoch [{epoch + 1} / {num_epochs}], Loss: {loss.item()}')
     _plot_loss(losses, num_epochs, lr=lr, momentum=momentum, mb_size=mb_size, gc_max_norm=gc_max_norm)
@@ -176,7 +171,7 @@ def fit_polynomial_sgd_and_test(x_t_test_set_pairs: torch.Tensor, x_t_pairs: tor
 
     ds = TensorDataset(x, t)
     dataloader = DataLoader(dataset=ds, batch_size=mb_size, shuffle=True)
-    num_epochs, loss = 300, 0
+    num_epochs, loss = 200, 0
     losses, test_losses = list(), list()
 
     # Training loop:
@@ -236,7 +231,7 @@ def _plot_losses(test_losses, losses, num_epochs: int, lr: float, momentum: floa
     epochs = np.arange(1, num_epochs + 1)
     _, ax = plt.subplots()
     ax.set_xlim(1, num_epochs + 1)
-    # ax.set_ylim(0, 100)
+    # ax.set_ylim(0, 1000000)
     plt.title(f'num_epochs={num_epochs}, lr={lr}, momentum={momentum}, mb_size={mb_size}, \n'
               f'gc_max_norm={gc_max_norm}')
     ax.scatter(epochs, losses, label='train', color='blue', s=10)
