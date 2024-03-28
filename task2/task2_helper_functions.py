@@ -1,10 +1,78 @@
 from time import time
-import torchvision
-import torchvision.transforms as tv_transforms
+import numpy as np
 import torch
 from torch import nn
 import torch.nn.functional as F
-import numpy as np
+import torchvision
+import torchvision.transforms as tv_transforms
+import torchvision.datasets as tv_datasets
+from PIL import Image
+
+
+class MixUp(nn.Module):
+
+    def augment(self, device, X, y, batch_size, sampling_method, alpha=0.2):
+        """
+        If sampling_method is 1: λ is sampled from a beta distribution as described in Zhang et al 2018.
+        If sampling_method is 2: λ is sampled uniformly from a predefined range.
+
+        "For mixup, we find that αlpha ∈ [0.1, 0.4] leads to improved performance over ERM,
+        whereas for large αlpha, mixup leads to underfitting." Zhang et al.
+        """
+        np.random.seed(42)
+
+        if sampling_method == 2:
+            lambda_ = np.random.uniform(low=0.0, high=1.0)
+        else:
+            lambda_ = np.random.beta(alpha, alpha)
+
+        lam = torch.tensor(lambda_, device=device)
+
+        random_i = torch.randperm(batch_size).to(device)
+        X2 = X[random_i, :, :, :]
+        y2 = y[random_i]
+
+        y = F.one_hot(y, num_classes=10) * 1.0
+        y2 = F.one_hot(y2, num_classes=10) * 1.0
+        new_X = (lam * X) + ((1. - lam) * X2)
+        new_y = (lam * y) + ((1. - lam) * y2)
+
+        return new_X, new_y
+
+
+def visualise_16_mixup():
+    batch_size = 16
+    pretrained_transforms = tv_transforms.Compose([
+        tv_transforms.Resize((224, 224)),
+        tv_transforms.ToTensor(),
+        tv_transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ])
+    trainset = tv_datasets.CIFAR10(root='./data', train=True, download=True, transform=pretrained_transforms)
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=2)
+    dataiter = iter(trainloader)
+    images, labels = next(dataiter)
+    device = torch.device(
+        'cuda' if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_available() else 'cpu')
+    print(f'Using {device} device')
+
+    images, labels = MixUp().augment(device, X=images, y=labels, batch_size=batch_size, sampling_method=1)
+    # Assuming these are correct normalisation params used in pretrained_transforms:
+    mean = torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
+    std = torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1)
+
+    images_concat = torch.cat(images.split(1, 0), 3).squeeze()
+    # De-normalise
+    for i in range(3):  # 3 is for RGB images
+        images_concat[i] = images_concat[i] * std[i] + mean[i]
+
+    # Clamp values to keep between 0 and 1 (this may not be necessary if values are already scaled correctly)
+    images_concat = torch.clamp(images_concat, 0, 1)
+    # Convert to numpy array and then to PIL Image
+    im = Image.fromarray((images_concat.permute(1, 2, 0).numpy() * 255).astype('uint8'))
+    im.save("_16_augmented_mixup_images.png")
+    classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+    labels = torch.argmax(labels, dim=1)  # change back from one-hot
+    print('Ground truth labels:' + ' '.join('%5s' % classes[labels[j]] for j in range(batch_size)))
 
 
 def load_finetuned_vit_for_inference_only():
@@ -94,32 +162,6 @@ def fine_tune(device, pretrained_vit, trainloader, criterion, opt, epoch, sampli
     return train_loss_per_epoch, train_accuracy
 
 
-class MixUp(nn.Module):
-
-    def augment(self, device, X, y, batch_size, sampling_method, alpha=0.2):
-        """
-        If sampling_method is 1: λ is sampled from a beta distribution as described in Zhang et al 2018.
-        If sampling_method is 2: λ is sampled uniformly from a predefined range.
-
-        "For mixup, we find that αlpha ∈ [0.1, 0.4] leads to improved performance over ERM,
-        whereas for large αlpha, mixup leads to underfitting." Zhang et al.
-        """
-        np.random.seed(42)
-
-        if sampling_method == 2:
-            lambda_ = np.random.uniform(low=0.0, high=1.0)
-        else:
-            lambda_ = np.random.beta(alpha, alpha)
-
-        lam = torch.tensor(lambda_, device=device)
-
-        random_i = torch.randperm(batch_size).to(device)
-        X2 = X[random_i, :, :, :]
-        y2 = y[random_i]
-
-        y = F.one_hot(y, num_classes=10) * 1.0
-        y2 = F.one_hot(y2, num_classes=10) * 1.0
-        new_X = (lam * X) + ((1. - lam) * X2)
-        new_y = (lam * y) + ((1. - lam) * y2)
-
-        return new_X, new_y
+if __name__ == '__main__':
+    print('start')
+    visualise_16_mixup()
