@@ -6,6 +6,21 @@ from matplotlib import pyplot as plt
 from math import floor, log10
 
 
+def set_device():
+    """
+    Set device: to either Cuda (GPU), MPS (Apple Silicon GPU), or CPU
+    """
+    device = torch.device(
+        'cuda'
+        if torch.cuda.is_available()
+        else 'mps'
+        if torch.backends.mps.is_available()
+        else 'cpu'
+    )
+    print(f'Using {device} device')
+    return device
+
+
 def convert_to_tensor(a):
     """
     Convert NumPy vector or scalar to torch tensor, (and dtype float32).

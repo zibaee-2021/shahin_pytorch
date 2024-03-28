@@ -17,7 +17,7 @@ def _plot(x_t_pairs_):
 
 
 if __name__ == '__main__':
-
+    device = hfuncs.set_device()
     w_true = np.array([[1], [2], [3]])
     w_true = hfuncs.convert_to_tensor(w_true)
 
