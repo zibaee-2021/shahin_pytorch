@@ -1,0 +1,13 @@
+Two finetuned pretrained ViT models for task 2 are located in onedrive at:
+
+https://liveuclac-my.sharepoint.com/:u:/r/personal/ucabjzi_ucl_ac_uk/Documents/saved_models_t2.zip?csf=1&web=1&e=xAAZAE
+
+They are set to publically accessible to 'anyone'.
+
+It is in a zipped folder. After moving it here, unzip.
+
+If you want to run the code that uses these fine-tuned pretrained models (for inference),
+they need to be moved to the task2 folder.
+The expected path is `saved_models_t2/pretrained_finetuned/sm_1` and sm_2, for sampling method 1 or 2.
+Loading a model is hardcoded to read the sm_1 model (but can be changed by manually editing the path in
+function `load_finetuned_vit_for_inference_only()` in task2/task2_helper_functions.py)

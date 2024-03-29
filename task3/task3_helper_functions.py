@@ -47,7 +47,7 @@ def load_finetuned_vit_for_inference_only():
     pretrained_vit.heads = nn.Sequential(nn.Linear(in_features=768, out_features=10))
     # print('\nWeights before loading saved model:')
     # print(pretrained_vit.heads[0].weight.data)
-    saved_model_path = 'saved_models/pretrained_finetuned/vit_finetuned.pt'
+    saved_model_path = 'saved_models_t3/pretrained_finetuned/sm_1/vit_finetuned.pt'
     pretrained_vit.load_state_dict(torch.load(saved_model_path, map_location=torch.device('cuda')))
     # print('\nWeights after loading saved model:')
     # print(pretrained_vit.heads[0].weight.data)
@@ -167,7 +167,7 @@ def save_loss_acc_mins_to_csv(sampling_method, train_losses, val_losses, test_lo
     train_mins_np = train_mins.cpu().numpy()
     val_mins_np = val_mins.cpu().numpy()
     test_mins_np = test_mins.cpu().numpy()
-    losses_accs_mins_dirs = f'saved_models/acc_losses_mins/sm_{sampling_method}'
+    losses_accs_mins_dirs = f'acc_losses_mins/sm_{sampling_method}'
     if not os.path.exists(losses_accs_mins_dirs): os.makedirs(losses_accs_mins_dirs)
     vit_train_losses_path = os.path.join(losses_accs_mins_dirs, 'train_losses_np.csv')
     vit_val_losses_path = os.path.join(losses_accs_mins_dirs, 'val_losses_np.csv')

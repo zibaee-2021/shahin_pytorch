@@ -80,13 +80,13 @@ if __name__ == '__main__':
         diff_ls_train = y_preds_ls_train - y_true_train
         mean_ls_train = hfuncs.round_sig_figs(to_round=float(diff_ls_train.mean()), sf=4)
         std_ls_train = hfuncs.round_sig_figs(to_round=float(diff_ls_train.std()), sf=4)
-        print(f"For m={m}, Mean & std dev of difference between 'LS-predicted' values and underlying 'true' "
+        print(f"For m={m}, Mean & std dev of difference between LS-predicted values and underlying 'true' "
               f"polynomial curve for training set = {mean_ls_train} +/- {std_ls_train} (to 4 s.f.)")
 
         diff_ls_test = y_preds_ls_test - y_true_test
         mean_ls_test = hfuncs.round_sig_figs(to_round=float(diff_ls_test.mean()), sf=4)
         std_ls_test = hfuncs.round_sig_figs(to_round=float(diff_ls_test.std()), sf=4)
-        print(f"For m={m}, Mean & std dev of difference between the 'LS-predicted' values"
+        print(f"For m={m}, Mean & std dev of difference between the LS-predicted values"
               f"and underlying 'true' polynomial curve for test set = {mean_ls_test} +/- {std_ls_test} (to 4 s.f.)")
 
         print(f'LS-learned weights = {w_hat_ls.numpy().ravel()}')
@@ -110,13 +110,13 @@ if __name__ == '__main__':
         diff_sgd_train = y_preds_sgd_train - y_true_train
         mean_sgd_train = hfuncs.round_sig_figs(to_round=float(diff_sgd_train.mean()), sf=4)
         std_sgd_train = hfuncs.round_sig_figs(to_round=float(diff_sgd_train.std()), sf=4)
-        print(f"For m={m}, Mean & std dev of difference between 'SGD-predicted' values and underlying 'true' "
+        print(f"For m={m}, Mean & std dev of difference between SGD-predicted values and underlying 'true' "
               f"polynomial curve for training set = {mean_sgd_train} +/- {std_sgd_train} (to 4 s.f.)")
 
         diff_sgd_test = y_preds_sgd_test - y_true_test
         mean_sgd_test = hfuncs.round_sig_figs(to_round=float(diff_sgd_test.mean()), sf=4)
         std_sgd_test = hfuncs.round_sig_figs(to_round=float(diff_sgd_test.std()), sf=4)
-        print(f"For m={m}, Mean & std dev of difference between 'SGD-predicted' values"
+        print(f"For m={m}, Mean & std dev of difference between SGD-predicted values"
               f"and underlying 'true' polynomial curve for test set = {mean_sgd_test} +/- {std_sgd_test}")
         print(f'SGD-learned weights = {w_hat_sgd.numpy().ravel()}')
 

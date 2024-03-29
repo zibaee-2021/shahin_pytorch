@@ -30,19 +30,22 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'mps' if torch.ba
 print(f'Using {device} device')
 
 if __name__ == '__main__':
-    """ ######## IMPORTANT FLAG: ACTION REQUIRED ######## """
+    """
+    IMPORTANT: ########################################################################
+    MODELS ARE ALL IN ONEDRIVE AND MUST BE MOVED HERE IN ORDER FOR THIS FUNCTION TO WORK
+    DO NOT SET FLAG TO TRUE UNLESS YOU HAVE MOVED THE MODEL INTO: 
+    'SAVED_MODELS/PRETRAINED_FINETUNED/SM_1'
+    #####################################################################################
     # SET THIS FLAG TO TRUE IF YOU JUST WANT TO DO INFERENCE (AND NOT DO FINE-TUNING OF
     # PRETRAINED VIT MODEL):
+    ##################################################################################### 
+    """
     # load_finetuned_vit_for_inference_only = True
     load_finetuned_vit_for_inference_only = False
-    """ ################################################# """
 
-    """ CHANGE SAMPLING_METHOD TO 2 FOR UNIFORM DIST IN MIXUP """
-    # SAMPLING_METHOD = 1
     SAMPLING_METHOD = 2
-    """ ##################################################### """
 
-    if load_finetuned_vit_for_inference_only:  # DO NOT FINE-TUNE. JUST DO INFERENCE.
+    if load_finetuned_vit_for_inference_only:  # FOR INFERENCE. (NO FINE-TUNING)
         pretrained_vit, pretrained_transforms = hfun3.load_finetuned_vit_for_inference_only()
     else:  # FINE-TUNE A PRETRAINED VIT MODEL ON CIFAR-10. FREEZE WEIGHTS AND THEN ADD LAYER TO HEAD:
         pretrained_vit, pretrained_transforms = hfun3.load_pretrained_vit_for_finetuning()

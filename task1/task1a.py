@@ -78,7 +78,7 @@ if __name__ == '__main__':
             mean_sgd_test = hfuncs.round_sig_figs(to_round=float(diff_sgd_test.mean()), sf=4)
             std_sgd_test = hfuncs.round_sig_figs(to_round=float(diff_sgd_test.std()), sf=4)
 
-    print(f"The optimal m is {optimal_m}. \nFor this m, the mean & std dev of difference between 'SGD-predicted' values"
+    print(f"The optimal m is {optimal_m}. \nFor this m, the mean & std dev of difference between SGD-predicted values"
               f" and underlying 'true' polynomial curve for test set = {mean_sgd_test} +/- {std_sgd_test}")
 
 

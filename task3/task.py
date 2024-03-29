@@ -12,19 +12,29 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'mps' if torch.ba
 print(f'Using {device} device')
 
 if __name__ == '__main__':
-    """ ######## IMPORTANT FLAG: ACTION REQUIRED ######## """
+    """
+    IMPORTANT: ##########################################################################
+    MODELS ARE ALL IN ONEDRIVE AND MUST BE MOVED HERE IN ORDER FOR THIS FUNCTION TO WORK
+    DO NOT SET FLAG TO TRUE UNLESS YOU HAVE MOVED THE MODEL INTO: 
+    'SAVED_MODELS_T3/PRETRAINED_FINETUNED/SM_1'
+    #####################################################################################
     # SET THIS FLAG TO TRUE IF YOU JUST WANT TO DO INFERENCE (AND NOT DO FINE-TUNING OF
     # PRETRAINED VIT MODEL):
+    ##################################################################################### 
+    """
     # load_finetuned_vit_for_inference_only = True
     load_finetuned_vit_for_inference_only = False
-    """ ################################################# """
 
-    """ CHANGE SAMPLING_METHOD TO 2 FOR UNIFORM DIST IN MIXUP """
+    """
+    ##################################################################################### 
+    CHANGE SAMPLING_METHOD TO 2 FOR UNIFORM DIST IN MIXUP (OR JUST RUN TASK_SM2.PY INSTEAD)
+    ##################################################################################### 
+    """
     SAMPLING_METHOD = 1
     # SAMPLING_METHOD = 2
-    """ ##################################################### """
 
-    if load_finetuned_vit_for_inference_only:  # DO NOT FINE-TUNE. JUST DO INFERENCE.
+
+    if load_finetuned_vit_for_inference_only:  # FOR INFERENCE. (NO FINE-TUNING)
         pretrained_vit, pretrained_transforms = hfun3.load_finetuned_vit_for_inference_only()
     else:  # FINE-TUNE A PRETRAINED VIT MODEL ON CIFAR-10. FREEZE WEIGHTS AND THEN ADD LAYER TO HEAD:
         pretrained_vit, pretrained_transforms = hfun3.load_pretrained_vit_for_finetuning()
@@ -104,7 +114,7 @@ if __name__ == '__main__':
         OTHERWISE YOU SHOULD MANUALLY CHANGE THE FILE NAMES"""
         save_fine_tuned_model = False
         if save_fine_tuned_model:
-            tuned_model_dirs = f'saved_models/pretrained_finetuned/sm_{SAMPLING_METHOD}'
+            tuned_model_dirs = f'saved_models_t3/pretrained_finetuned/sm_{SAMPLING_METHOD}'
             if not os.path.exists(tuned_model_dirs): os.makedirs(tuned_model_dirs)
             fine_tuned_path = os.path.join(tuned_model_dirs, 'vit_finetuned.pt')
             torch.save(pretrained_vit.state_dict(), fine_tuned_path)

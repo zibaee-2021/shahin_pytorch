@@ -12,13 +12,21 @@ print(f'Using {device} device')
 
 
 if __name__ == '__main__':
-
-    """ ######## IMPORTANT FLAG: ACTION REQUIRED ######## """
+    """
+    ############ IMPORTANT: ############################################################
+    saved_models_t2.zip is publically accesible from:
+    https://liveuclac-my.sharepoint.com/:u:/r/personal/ucabjzi_ucl_ac_uk/Documents
+    /saved_models_t2.zip?csf=1&web=1&e=xAAZAE
+    MODELS ARE ALL IN ONEDRIVE AND MUST BE MOVED HERE IN ORDER FOR THIS FUNCTION TO WORK
+    DO NOT SET FLAG TO TRUE UNLESS YOU HAVE MOVED THE MODEL INTO: 
+    'SAVED_MODELS_T2/PRETRAINED_FINETUNED/SM_1'
+    #####################################################################################
     # SET THIS FLAG TO TRUE IF YOU JUST WANT TO DO INFERENCE (AND NOT DO FINE-TUNING OF
     # PRETRAINED VIT MODEL):
+    ##################################################################################### 
+    """
     # load_finetuned_vit_for_inference_only = True
     load_finetuned_vit_for_inference_only = False
-    """ ################################################# """
 
     """ CHANGE SAMPLING_METHOD TO 2 FOR UNIFORM DIST IN MIXUP """
     SAMPLING_METHOD = 1
@@ -80,7 +88,7 @@ if __name__ == '__main__':
         OTHERWISE YOU SHOULD MANUALLY CHANGE THE FILE NAMES"""
         save_fine_tuned_model = False
         if save_fine_tuned_model:
-            tuned_model_dirs = f'saved_models/pretrained_finetuned/sm_{SAMPLING_METHOD}'
+            tuned_model_dirs = f'saved_models_t2/pretrained_finetuned/sm_{SAMPLING_METHOD}'
             if not os.path.exists(tuned_model_dirs): os.makedirs(tuned_model_dirs)
             fine_tuned_path = os.path.join(tuned_model_dirs, 'vit_finetuned.pt')
             torch.save(pretrained_vit.state_dict(), fine_tuned_path)

@@ -1,0 +1,12 @@
+Two finetuned pretrained ViT models for task 3 are located in onedrive at:
+
+
+They are set to publically accessible to 'anyone'.
+
+It is in a zipped folder. After moving it here, unzip.
+
+If you want to run the code that uses these fine-tuned pretrained models (for inference),
+they need to be moved to the task3 folder.
+The expected path is `saved_models_t3/pretrained_finetuned/sm_1` and sm_2, for sampling method 1 or 2.
+Loading a model is hardcoded to read the sm_1 model (but can be changed by manually editing the path in
+function `load_finetuned_vit_for_inference_only()` in task3/task3_helper_functions.py)

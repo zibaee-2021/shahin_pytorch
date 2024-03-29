@@ -42,6 +42,10 @@ class MixUp(nn.Module):
 
 
 def visualise_16_mixup():
+    """
+    Generate 16 images that have been processed by the mixup implementation written here (see MixUp class at top).
+    Save to png file.
+    """
     batch_size = 16
     pretrained_transforms = tv_transforms.Compose([
         tv_transforms.Resize((224, 224)),
@@ -75,14 +79,25 @@ def visualise_16_mixup():
     labels = torch.argmax(labels, dim=1)  # change back from one-hot
     print('Ground truth labels:' + ' '.join('%5s' % classes[labels[j]] for j in range(batch_size)))
 
+"""
+############ IMPORTANT: ############################################################
+MODELS ARE ALL IN ONEDRIVE AND MUST BE MOVED HERE IN ORDER FOR THIS FUNCTION TO WORK
+#####################################################################################
+"""
 
 def load_finetuned_vit_for_inference_only():
+    """
+    Load an already fine-tuned pretrained ViT model.
+    (It was fine-tuned using sampling method 1).
+    The models are all in onedrive and so they must be located to the
+    This code expects the models
+    """
     print('You are loading an already fine-tuned (CIFAR-10) pretrained ViT model for inference only.')
     pretrained_vit = torchvision.models.vit_b_16()
     pretrained_vit.heads = nn.Sequential(nn.Linear(in_features=768, out_features=10))
     # print('\nWeights before loading saved model:')
     # print(pretrained_vit.heads[0].weight.data)
-    saved_model_path = 'saved_models/pretrained_finetuned/vit_finetuned.pt'
+    saved_model_path = 'saved_models_t2/pretrained_finetuned/sm_1/vit_finetuned.pt'
     pretrained_vit.load_state_dict(torch.load(saved_model_path, map_location=torch.device('cuda')))
     # print('\nWeights after loading saved model:')
     # print(pretrained_vit.heads[0].weight.data)
@@ -168,7 +183,7 @@ def save_loss_acc_to_csv(sampling_method, train_losses, test_losses, train_accs,
     test_losses_np = test_losses.cpu().numpy()
     train_accs_np = train_accs.cpu().numpy()
     test_accs_np = test_accs.cpu().numpy()
-    losses_accs_dirs = f'saved_models/acc_losses/sm_{sampling_method}'
+    losses_accs_dirs = f'acc_losses/sm_{sampling_method}'
     if not os.path.exists(losses_accs_dirs): os.makedirs(losses_accs_dirs)
     vit_train_losses_path = os.path.join(losses_accs_dirs, 'train_losses_np.csv')
     vit_test_losses_path = os.path.join(losses_accs_dirs, 'test_losses_np.csv')
