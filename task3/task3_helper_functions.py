@@ -14,11 +14,15 @@ class MixUp(nn.Module):
 
     def augment(self, device, X, y, batch_size, sampling_method, alpha=0.2):
         """
-        If sampling_method is 1: λ is sampled from a beta distribution as described in Zhang et al 2018.
-        If sampling_method is 2: λ is sampled uniformly from a predefined range.
+        :param device: Device it is running on (e.g. 'cpu', 'cuda')
+        :param X: input batch of images (tensor)
+        :param y: labels of batch(tensor)
+        :param batch_size: Expected to be 20.
+        :param sampling_method: 1 or 2 for sampling lambda from beta distribution (as in paper) or uniform in [0,1].
+        :param alpha: mixup parameter
+                "For mixup, we find that αlpha ∈ [0.1, 0.4] leads to improved performance over ERM,
+                whereas for large αlpha, mixup leads to underfitting." Zhang et al 2018.
 
-        "For mixup, we find that αlpha ∈ [0.1, 0.4] leads to improved performance over ERM,
-        whereas for large αlpha, mixup leads to underfitting." Zhang et al.
         """
         np.random.seed(42)
 
@@ -69,6 +73,10 @@ def load_finetuned_vit_for_inference_only():
 
 
 def load_pretrained_vit_for_finetuning():
+    """
+    Load a pretrained ViT model from torchvision.models.
+    Return the model together with the corresponding transform, as a tuple.
+    """
     print("You're loading a pretrained ViT, in order to fine-tune it on CIFAR-10 over 20 epochs "
           "of a training loop. Evaluate the model on a test set at each epoch.")
     pretrained_vit_weights = torchvision.models.ViT_B_16_Weights.DEFAULT
@@ -82,6 +90,16 @@ def load_pretrained_vit_for_finetuning():
 
 
 def test_inference(device, pretrained_vit, testloader, criterion, epoch=None):
+    """
+    Runs prediction on test batch of images using the given pretrained ViT model same loss function as used in
+    training part. (Also used for inference-only functionality).
+    :param device: Device it is running on (e.g. 'cpu', 'cuda')
+    :param pretrained_vit: the pretrained ViT model, which may be not fine-tuned, in the process of being fine-tuned
+    or having been fine-tuned over 20 epochs.
+    :param testloader: The batch of images to input for classification.
+    :param epoch: The current epoch, or none if just inference only.
+    :return: loss, accuracy and time taken.
+    """
     test_start = time()
     pretrained_vit.eval()
     test_loss_per_epoch, test_accuracy = 0, 0
@@ -90,9 +108,7 @@ def test_inference(device, pretrained_vit, testloader, criterion, epoch=None):
         for i, data in enumerate(testloader):
             inputs, labels = data[0].to(device), data[1].to(device)
             y_preds = pretrained_vit(inputs)
-            # y_preds.shape is .  these are   logits.
             loss = criterion(y_preds, labels)
-
             test_pred_labels = y_preds.argmax(dim=1)
             test_accuracy += ((test_pred_labels == labels).sum().item()/len(test_pred_labels))
             test_loss_per_epoch += loss.item()
@@ -108,8 +124,18 @@ def test_inference(device, pretrained_vit, testloader, criterion, epoch=None):
     return test_loss_per_epoch, test_accuracy, test_min
 
 
-def fine_tune(device, pretrained_vit, trainloader, criterion, opt, epoch,
-              sampling_method):
+def fine_tune(device, pretrained_vit, trainloader, criterion, opt, epoch, sampling_method):
+    """
+    Fine-tune a pretrained ViT model for one epoch.
+    :param device: Device it is running on (e.g. 'cpu', 'cuda')
+    :param pretrained_vit: the pretrained ViT model, at any stage of the fine-tuning 20 epochs.
+    :param trainloader: The batch of images to input for classification.
+    :param criterion: The loss function to use.
+    :param opt: The Optimiser to use.
+    :param epoch: The current epoch, or none if just inference only.
+    :param sampling_method: For mixip augmentation, 1 for beta distribution, 2 for uniform.
+    :return: loss, accuracy and time taken.
+    """
     train_start = time()
     pretrained_vit.train()
     train_loss_per_epoch, train_accuracy = 0, 0
@@ -141,6 +167,9 @@ def fine_tune(device, pretrained_vit, trainloader, criterion, opt, epoch,
 
 
 def validation(device, pretrained_vit, validationloader, criterion, epoch=None):
+    """
+    (Same functionality as `test_inference()` but has different print out wording)
+    """
     val_start = time()
     pretrained_vit.eval()
     val_loss_per_epoch, val_accuracy = 0, 0
@@ -167,6 +196,19 @@ def validation(device, pretrained_vit, validationloader, criterion, epoch=None):
 
 def save_loss_acc_mins_to_csv(sampling_method, train_losses, val_losses, test_losses,
                               train_accs, val_accs, test_accs, train_mins, val_mins, test_mins):
+    """
+    Save 20 losses, accuracies and minutes taken for each of the 20 epochs to csv files.
+    :param sampling_method: 1 or 2 according to what the flag SAMPLING_METHOD is set.
+    :param train_losses: 20 losses from training model over 20 epochs.
+    :param val_losses: 20 losses from evaluating model on validation set over 20 epochs.
+    :param test_losses: 20 losses from evaluating model on test set over 20 epochs.
+    :param train_accs: 20 losses from training model over 20 epochs.
+    :param val_accs: 20 losses from evaluating model on validation set over 20 epochs.
+    :param test_accs: 20 losses evaluating model on test set over 20 epochs.
+    :param train_mins: 20 losses from training model over 20 epochs.
+    :param val_mins: 20 losses from evaluating model on validation set over 20 epochs.
+    :param test_mins: 20 losses evaluating model on test set over 20 epochs.
+    """
     train_losses_np = train_losses.cpu().numpy()
     val_losses_np = val_losses.cpu().numpy()
     test_losses_np = test_losses.cpu().numpy()
@@ -197,8 +239,4 @@ def save_loss_acc_mins_to_csv(sampling_method, train_losses, val_losses, test_lo
     np.savetxt(vit_val_mins_path, val_mins_np, delimiter=',')
     np.savetxt(vit_test_mins_path, test_mins_np, delimiter=',')
     print(f'saved to {losses_accs_mins_dirs}')
-
-
-if __name__ == '__main__':
-    print('start')
 

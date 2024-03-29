@@ -14,11 +14,14 @@ class MixUp(nn.Module):
 
     def augment(self, device, X, y, batch_size, sampling_method, alpha=0.2):
         """
-        If sampling_method is 1: λ is sampled from a beta distribution as described in Zhang et al 2018.
-        If sampling_method is 2: λ is sampled uniformly from a predefined range.
-
-        "For mixup, we find that αlpha ∈ [0.1, 0.4] leads to improved performance over ERM,
-        whereas for large αlpha, mixup leads to underfitting." Zhang et al.
+        :param device: Device it is running on (e.g. 'cpu', 'cuda')
+        :param X: input batch of images (tensor)
+        :param y: labels of batch(tensor)
+        :param batch_size: Expected to be 20.
+        :param sampling_method: 1 or 2 for sampling lambda from beta distribution (as in paper) or uniform in [0,1].
+        :param alpha: mixup parameter
+                "For mixup, we find that αlpha ∈ [0.1, 0.4] leads to improved performance over ERM,
+                whereas for large αlpha, mixup leads to underfitting." Zhang et al 2018.
         """
         np.random.seed(42)
 
@@ -128,6 +131,17 @@ def load_pretrained_vit_for_finetuning():
 
 
 def test_inference(device, pretrained_vit, testloader, criterion, epoch=None):
+    """
+    Runs prediction on test batch of images using the given pretrained ViT model same loss function as used in
+    training part. (Also used for inference-only functionality).
+    :param device: Device it is running on (e.g. 'cpu', 'cuda')
+    :param pretrained_vit: the pretrained ViT model, which may be not fine-tuned, in the process of being fine-tuned
+    or having been fine-tuned over 20 epochs.
+    :param testloader: The batch of images to input for classification.
+    :param criterion: The loss function (same as that used for the training part).
+    :param epoch: The current epoch, or none if just inference only.
+    :return: loss and accuracy.
+    """
     test_start = time()
     pretrained_vit.eval()
     test_loss_per_epoch, test_accuracy = 0, 0
@@ -154,6 +168,17 @@ def test_inference(device, pretrained_vit, testloader, criterion, epoch=None):
 
 
 def fine_tune(device, pretrained_vit, trainloader, criterion, opt, epoch, sampling_method):
+    """
+    Fine-tune a pretrained ViT model for one epoch.
+    :param device: Device it is running on (e.g. 'cpu', 'cuda')
+    :param pretrained_vit: the pretrained ViT model, at any stage of the fine-tuning 20 epochs.
+    :param trainloader: The batch of images to input for classification.
+    :param criterion: The loss function to use.
+    :param opt: The Optimiser to use.
+    :param epoch: The current epoch, or none if just inference only.
+    :param sampling_method: For mixip augmentation, 1 for beta distribution, 2 for uniform.
+    :return: loss and accuracy.
+    """
     tune_start = time()
     pretrained_vit.train()
     train_loss_per_epoch, train_accuracy = 0, 0
@@ -184,6 +209,14 @@ def fine_tune(device, pretrained_vit, trainloader, criterion, opt, epoch, sampli
 
 
 def save_loss_acc_to_csv(sampling_method, train_losses, test_losses, train_accs, test_accs):
+    """
+    Save 20 losses and accuracies for each of the 20 epochs to csv files.
+    :param sampling_method: 1 or 2 according to what the flag SAMPLING_METHOD is set.
+    :param train_losses: 20 losses from training model over 20 epochs.
+    :param test_losses: 20 losses from evaluating model on test set over 20 epochs.
+    :param train_accs: 20 losses from training model over 20 epochs.
+    :param test_accs: 20 losses evaluating model on test set over 20 epochs.
+    """
     train_losses_np = train_losses.cpu().numpy()
     test_losses_np = test_losses.cpu().numpy()
     train_accs_np = train_accs.cpu().numpy()
@@ -200,7 +233,3 @@ def save_loss_acc_to_csv(sampling_method, train_losses, test_losses, train_accs,
     np.savetxt(vit_test_accs_path, test_accs_np, delimiter=',')
     print(f'saved to {losses_accs_dirs}')
 
-
-if __name__ == '__main__':
-    print('start')
-    visualise_16_mixup()

@@ -95,8 +95,8 @@ if __name__ == '__main__':
             train_accs[epoch] = train_accuracy
             train_mins[epoch] = train_min
             # 2. EVALUATE ON VALIDATION SET AFTER EACH EPOCH OF FINE-TUNING:
-            val_loss_per_epoch, val_accuracy, val_min = hfun3.test_inference(device, pretrained_vit,
-                                                                             validationloader, criterion)
+            val_loss_per_epoch, val_accuracy, val_min = hfun3.validation(device, pretrained_vit, validationloader,
+                                                                         criterion)
             val_losses[epoch] = val_loss_per_epoch
             val_accs[epoch] = val_accuracy
             val_mins[epoch] = val_min
