@@ -15,6 +15,7 @@ def _plot(x_t_pairs_):
     # plt.savefig('plots/observed.jpg')
     plt.show()
 
+# THIS IS ABLE TO RUN ON CPU OR GPU. IT SETS THE DEVICE AUTOMATICALLY.
 
 if __name__ == '__main__':
     device = hfuncs.set_device()
