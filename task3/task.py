@@ -33,13 +33,12 @@ if __name__ == '__main__':
     load_finetuned_vit_for_inference_only = False
 
     """
-    ##################################################################################### 
-    CHANGE SAMPLING_METHOD TO 2 FOR UNIFORM DIST IN MIXUP (OR JUST RUN TASK_SM2.PY INSTEAD)
-    ##################################################################################### 
+    ##################################################### 
+    CHANGE SAMPLING_METHOD TO 2 FOR UNIFORM DIST IN MIXUP
+    ##################################################### 
     """
     SAMPLING_METHOD = 1
     # SAMPLING_METHOD = 2
-
 
     if load_finetuned_vit_for_inference_only:  # FOR INFERENCE. (NO FINE-TUNING)
         pretrained_vit, pretrained_transforms = hfun3.load_finetuned_vit_for_inference_only(device)
