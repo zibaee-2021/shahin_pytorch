@@ -35,7 +35,7 @@ if __name__ == '__main__':
     """ ##################################################### """
 
     if load_finetuned_vit_for_inference_only:  # DO NOT FINE-TUNE. JUST DO INFERENCE.
-        pretrained_vit, pretrained_transforms = hfun2.load_finetuned_vit_for_inference_only()
+        pretrained_vit, pretrained_transforms = hfun2.load_finetuned_vit_for_inference_only(device)
     else:  # FINE-TUNE A PRETRAINED VIT MODEL ON CIFAR-10. FREEZE WEIGHTS AND THEN ADD LAYER TO HEAD:
         pretrained_vit, pretrained_transforms = hfun2.load_pretrained_vit_for_finetuning()
 
@@ -95,4 +95,5 @@ if __name__ == '__main__':
             torch.save(pretrained_vit.state_dict(), fine_tuned_path)
             print('Trained model saved.')
 
-
+    # VISUALISE RESULTS. SAVE 36 IMAGES TO PNG AND PRINT PREDICTED LABELS AND GROUND-TRUTH LABELS
+    hfun2.visualise_results()

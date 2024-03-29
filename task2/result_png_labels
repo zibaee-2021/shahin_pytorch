@@ -1,0 +1,5 @@
+The following correspond to result.png.
+Also generated at the end of the task.py file.
+
+Ground truth classes: deer   car truck   dog  deer  frog   dog  frog plane truck   cat truck horse  frog truck  ship plane   cat  ship  ship horse horse  deer  frog horse   cat  frog   cat  frog  bird   car  bird   cat horse  bird  frog
+Predicted classes: deer truck truck   dog  deer  frog   dog  frog plane truck   cat truck horse  frog truck  ship plane  frog  ship  ship horse horse  deer  frog horse   dog  frog   cat  frog  bird   car  bird horse horse  bird  frog

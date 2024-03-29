@@ -84,12 +84,63 @@ def visualise_16_mixup():
     labels = torch.argmax(labels, dim=1)  # change back from one-hot
     print('Ground truth labels:' + ' '.join('%5s' % classes[labels[j]] for j in range(batch_size)))
 
+
+def visualise_results():
+    """
+    Test prediction of 36 images
+    Save to `result.png` file.
+    """
+    device = torch.device(
+        'cuda' if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_available() else 'cpu')
+    print(f'Using {device} device')
+    pretrained_vit, pretrained_transforms = load_finetuned_vit_for_inference_only(device)
+    pretrained_vit.to(device)
+
+    batch_size = 36
+    testset = tv_datasets.CIFAR10(root='./data', train=False, download=True, transform=pretrained_transforms)
+    testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=2)
+    dataiter = iter(testloader)
+    pretrained_vit.eval()
+
+    # do inference to predict class
+    with torch.inference_mode():
+        for i, data in enumerate(testloader):
+            inputs, labels = data[0].to(device), data[1].to(device)
+            y_preds = pretrained_vit(inputs)
+            test_pred_labels = y_preds.argmax(dim=1)
+            print(f'predicted = {test_pred_labels} for ground-truth = {labels}')
+            print(f'predicted ={test_pred_labels}')
+            images, labels = next(dataiter)
+            if i == 1:
+                break
+
+    # save to png
+    # images, labels = next(dataiter)
+    # images, labels = next(dataiter)
+    # Assuming these are correct normalisation params used in pretrained_transforms:
+    mean = torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
+    std = torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1)
+    images_concat = torch.cat(images.split(1, 0), 3).squeeze()
+    # De-normalise
+    for i in range(3):  # 3 is for RGB images
+        images_concat[i] = images_concat[i] * std[i] + mean[i]
+
+    # Clamp values to keep between 0 and 1 (this may not be necessary if values are already scaled correctly)
+    images_concat = torch.clamp(images_concat, 0, 1)
+    # Convert to numpy array and then to PIL Image
+    im = Image.fromarray((images_concat.permute(1, 2, 0).numpy() * 255).astype('uint8'))
+    im.save('result.png')
+    classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+    print('Ground truth classes:' + ' '.join('%5s' % classes[labels[j]] for j in range(batch_size)))
+    print('Predicted classes:' + ' '.join('%5s' % classes[test_pred_labels[j]] for j in range(batch_size)))
+
+
 """
 ############ IMPORTANT: ############################################################
 MODELS ARE ALL IN ONEDRIVE AND MUST BE MOVED HERE IN ORDER FOR THIS FUNCTION TO WORK
 #####################################################################################
 """
-def load_finetuned_vit_for_inference_only():
+def load_finetuned_vit_for_inference_only(device):
     """
     Load an already fine-tuned pretrained ViT model and return together with the transform as a tuple.
     (It was fine-tuned using sampling method 1).
@@ -104,7 +155,7 @@ def load_finetuned_vit_for_inference_only():
     # print('\nWeights before loading saved model:')
     # print(pretrained_vit.heads[0].weight.data)
     saved_model_path = 'saved_models_t2/pretrained_finetuned/sm_1/vit_finetuned.pt'
-    pretrained_vit.load_state_dict(torch.load(saved_model_path, map_location=torch.device('cuda')))
+    pretrained_vit.load_state_dict(torch.load(saved_model_path, map_location=torch.device(device)))
     # print('\nWeights after loading saved model:')
     # print(pretrained_vit.heads[0].weight.data)
     pretrained_transforms = tv_transforms.Compose([
@@ -152,9 +203,7 @@ def test_inference(device, pretrained_vit, testloader, criterion, epoch=None):
         for i, data in enumerate(testloader):
             inputs, labels = data[0].to(device), data[1].to(device)
             y_preds = pretrained_vit(inputs)
-            # y_preds.shape is .  these are   logits.
             loss = criterion(y_preds, labels)
-
             test_pred_labels = y_preds.argmax(dim=1)
             test_accuracy += ((test_pred_labels == labels).sum().item()/len(test_pred_labels))
             test_loss_per_epoch += loss.item()
@@ -235,3 +284,6 @@ def save_loss_acc_to_csv(sampling_method, train_losses, test_losses, train_accs,
     np.savetxt(vit_test_accs_path, test_accs_np, delimiter=',')
     print(f'saved to {losses_accs_dirs}')
 
+
+if __name__ == '__main__':
+    visualise_results()

@@ -47,7 +47,7 @@ class MixUp(nn.Module):
         return new_X, new_y
 
 
-def load_finetuned_vit_for_inference_only():
+def load_finetuned_vit_for_inference_only(device):
     """
     Load an already fine-tuned pretrained ViT model and return together with the transform as a tuple.
     (It was fine-tuned using sampling method 1).
@@ -63,7 +63,7 @@ def load_finetuned_vit_for_inference_only():
     # print('\nWeights before loading saved model:')
     # print(pretrained_vit.heads[0].weight.data)
     saved_model_path = 'saved_models_t3/pretrained_finetuned/sm_1/vit_finetuned.pt'
-    pretrained_vit.load_state_dict(torch.load(saved_model_path, map_location=torch.device('cuda')))
+    pretrained_vit.load_state_dict(torch.load(saved_model_path, map_location=torch.device(device)))
     # print('\nWeights after loading saved model:')
     # print(pretrained_vit.heads[0].weight.data)
     pretrained_transforms = tv_transforms.Compose([
