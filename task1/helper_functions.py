@@ -1,3 +1,5 @@
+# Student number: 23092186
+
 import numpy as np
 import torch
 from torch import optim, nn

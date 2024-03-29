@@ -1,3 +1,5 @@
+# Student number: 23092186
+
 import os
 from time import time
 import numpy as np

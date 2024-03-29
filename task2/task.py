@@ -1,3 +1,4 @@
+# Student number: 23092186
 """
 Task 2 A depth-wise separable convolution
 """

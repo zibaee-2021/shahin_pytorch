@@ -1,21 +1,5 @@
-"""
-Task 3 Ablation Study
+# Student number: 23092186
 
-Using the Image Classification tutorial, this task investigates the impact of the following modification to
-the original network. To evaluate a modification, an ablation study can be used by comparing the
-performance before and after the modification.
-• Difference between training with the two λ sampling methods in Task 2.
-• Implement a task script “task.py”, under folder “task3”, completing the following: [30]
-  - Random split the data into development set (80%) and holdout test set (20%).
-  - Random split the development set into train (90%) and validation sets (10%).
-  - Design at least one metric, other than the loss, on validation set, for monitoring during
-training.
-  - Train two models using the two different sampling methods.
-  - Report a summary of loss values, speed, metric on training and validation.
-  - Save and submit these two trained models within the task folder.
-  - Report a summary of loss values and the metrics on the holdout test set. Compare the results
-with those obtained during development.
-"""
 from torch.utils.data import DataLoader, random_split
 
 import os

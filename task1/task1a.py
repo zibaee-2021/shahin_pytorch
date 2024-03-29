@@ -1,10 +1,4 @@
-"""
-Implement a task script “task1a.py”, under folder “task1”. [10]
-- Experiment how to make 𝑀 a learnable model parameter and using SGD to optimise this more
-flexible model.
-- Report, using printed messages, the optimised 𝑀 value and the mean (and standard deviation) in
-difference between the model-predicted values and the underlying “true” polynomial curve.
-"""
+# Student number: 23092186
 
 import numpy as np
 import torch
