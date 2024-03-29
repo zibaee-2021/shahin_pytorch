@@ -84,13 +84,14 @@ def visualise_16_mixup():
 MODELS ARE ALL IN ONEDRIVE AND MUST BE MOVED HERE IN ORDER FOR THIS FUNCTION TO WORK
 #####################################################################################
 """
-
 def load_finetuned_vit_for_inference_only():
     """
-    Load an already fine-tuned pretrained ViT model.
+    Load an already fine-tuned pretrained ViT model and return together with the transform as a tuple.
     (It was fine-tuned using sampling method 1).
-    The models are all in onedrive and so they must be located to the
-    This code expects the models
+    The models are all in onedrive at, set to 'Anyone' with link can view this:
+    https://liveuclac-my.sharepoint.com/:u:/g/personal/ucabjzi_ucl_ac_uk/ESaA7LsuO0RFoJLe74a82aUBIHCFMgFppJ03y8X7Hh6MgA?e=QsVsFS
+    and so they must be moved in to task2 folder, so that `saved_models_t2/pretrained_finetuned/sm_1/vit_finetuned.pt`
+    exists, before this function can be run.
     """
     print('You are loading an already fine-tuned (CIFAR-10) pretrained ViT model for inference only.')
     pretrained_vit = torchvision.models.vit_b_16()
@@ -110,6 +111,10 @@ def load_finetuned_vit_for_inference_only():
 
 
 def load_pretrained_vit_for_finetuning():
+    """
+    Load a pretrained ViT model from torchvision.models.
+    Return the model together with the corresponding transform, as a tuple.
+    """
     print("You're loading a pretrained ViT, in order to fine-tune it on CIFAR-10 over 20 epochs "
           "of a training loop. Evaluate the model on a test set at each epoch.")
     pretrained_vit_weights = torchvision.models.ViT_B_16_Weights.DEFAULT

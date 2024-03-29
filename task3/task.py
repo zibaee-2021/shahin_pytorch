@@ -14,7 +14,12 @@ print(f'Using {device} device')
 if __name__ == '__main__':
     """
     IMPORTANT: ##########################################################################
+    saved_models_t2.zip is publicly-accessible from:
+    https://liveuclac-my.sharepoint.com/:u:/g/personal/ucabjzi_ucl_ac_uk/EbX-4pESTR1DqCChyXUn1SkBMadggCYeYpvtqUotyBMHoQ?e=eh5O46
+    'Anyone' with link can view this.
+    
     MODELS ARE ALL IN ONEDRIVE AND MUST BE MOVED HERE IN ORDER FOR THIS FUNCTION TO WORK
+    
     DO NOT SET FLAG TO TRUE UNLESS YOU HAVE MOVED THE MODEL INTO: 
     'SAVED_MODELS_T3/PRETRAINED_FINETUNED/SM_1'
     #####################################################################################

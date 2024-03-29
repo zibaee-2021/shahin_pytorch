@@ -42,6 +42,15 @@ class MixUp(nn.Module):
 
 
 def load_finetuned_vit_for_inference_only():
+    """
+    Load an already fine-tuned pretrained ViT model and return together with the transform as a tuple.
+    (It was fine-tuned using sampling method 1).
+    The models are all in onedrive at, set to 'Anyone' with link can view this:
+    https://liveuclac-my.sharepoint.com/:u:/g/personal/ucabjzi_ucl_ac_uk/EbX-4pESTR1DqCChyXUn1SkBMadggCYeYpvtqUotyBMHoQ?e=eh5O46
+
+    and so they must be moved in to task2 folder, so that `saved_models_t2/pretrained_finetuned/sm_1/vit_finetuned.pt`
+    exists, before this function can be run.
+    """
     print('You are loading an already fine-tuned (CIFAR-10) pretrained ViT model for inference only.')
     pretrained_vit = torchvision.models.vit_b_16()
     pretrained_vit.heads = nn.Sequential(nn.Linear(in_features=768, out_features=10))
