@@ -1,3 +1,4 @@
+import os
 from time import time
 import numpy as np
 import torch
@@ -160,6 +161,24 @@ def fine_tune(device, pretrained_vit, trainloader, criterion, opt, epoch, sampli
     print(f'train_accuracy={train_accuracy}')
     print(f'One epoch of tuning took {round(((time() - tune_start) / 60), 4)} mins')
     return train_loss_per_epoch, train_accuracy
+
+
+def save_loss_acc_to_csv(sampling_method, train_losses, test_losses, train_accs, test_accs):
+    train_losses_np = train_losses.cpu().numpy()
+    test_losses_np = test_losses.cpu().numpy()
+    train_accs_np = train_accs.cpu().numpy()
+    test_accs_np = test_accs.cpu().numpy()
+    losses_accs_dirs = f'saved_models/acc_losses/sm_{sampling_method}'
+    if not os.path.exists(losses_accs_dirs): os.makedirs(losses_accs_dirs)
+    vit_train_losses_path = os.path.join(losses_accs_dirs, 'train_losses_np.csv')
+    vit_test_losses_path = os.path.join(losses_accs_dirs, 'test_losses_np.csv')
+    vit_train_accs_path = os.path.join(losses_accs_dirs, 'train_accs_np.csv')
+    vit_test_accs_path = os.path.join(losses_accs_dirs, 'test_accs_np.csv')
+    np.savetxt(vit_train_losses_path, train_losses_np, delimiter=',')
+    np.savetxt(vit_test_losses_path, test_losses_np, delimiter=',')
+    np.savetxt(vit_train_accs_path, train_accs_np, delimiter=',')
+    np.savetxt(vit_test_accs_path, test_accs_np, delimiter=',')
+    print(f'saved to {losses_accs_dirs}')
 
 
 if __name__ == '__main__':

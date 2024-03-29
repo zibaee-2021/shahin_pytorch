@@ -50,6 +50,11 @@ if __name__ == '__main__':
     load_finetuned_vit_for_inference_only = False
     """ ################################################# """
 
+    """ CHANGE SAMPLING_METHOD TO 2 FOR UNIFORM DIST IN MIXUP """
+    SAMPLING_METHOD = 1
+    # SAMPLING_METHOD = 2
+    """ ##################################################### """
+
     if load_finetuned_vit_for_inference_only:  # DO NOT FINE-TUNE. JUST DO INFERENCE.
         pretrained_vit, pretrained_transforms = hfun2.load_finetuned_vit_for_inference_only()
     else:  # FINE-TUNE A PRETRAINED VIT MODEL ON CIFAR-10. FREEZE WEIGHTS AND THEN ADD LAYER TO HEAD:
@@ -81,35 +86,21 @@ if __name__ == '__main__':
         test_losses = torch.zeros(epochs)
         train_accs = torch.zeros(epochs)
         test_accs = torch.zeros(epochs)
-        sampling_method = 1  # 1 FOR UNIFORM
-        # sampling_method = 2  # 2 for BETA
         all_20_epochs_start = time()
         for epoch in tqdm(range(epochs)):
             print(f'\nEpoch#{epoch + 1}')
             # 1. FINE-TUNE PRETRAINED MODEL:
             train_loss_per_epoch, train_accuracy = hfun2.fine_tune(device, pretrained_vit, trainloader, criterion, opt,
-                                                                   epoch, sampling_method)
+                                                                   epoch, SAMPLING_METHOD)
+            train_losses[epoch] = train_loss_per_epoch
+            train_accs[epoch] = train_accuracy
             # 2. EVALUATE ON TEST-SET AFTER EACH EPOCH OF FINE-TUNING:
             test_loss_per_epoch, test_accuracy = hfun2.test_inference(device, pretrained_vit, testloader, criterion)
             test_losses[epoch] = test_loss_per_epoch
             test_accs[epoch] = test_accuracy
 
         # # SAVE LOSSES & ACCURACIES FOR EACH OF 20 EPOCHS TO CSV FILES:
-        train_losses_np = train_losses.cpu().numpy()
-        test_losses_np = test_losses.cpu().numpy()
-        test_accs_np = test_accs.cpu().numpy()
-        train_accs_np = train_accs.cpu().numpy()
-        losses_accs_dirs = f'saved_models/acc_losses/sm_{sampling_method}'
-        if not os.path.exists(losses_accs_dirs): os.makedirs(losses_accs_dirs)
-        vit_train_losses_path = os.path.join(losses_accs_dirs, 'train_losses_np.csv')
-        vit_test_losses_path = os.path.join(losses_accs_dirs, 'test_losses_np.csv')
-        vit_train_accs_path = os.path.join(losses_accs_dirs, 'train_accs_np.csv')
-        vit_test_accs_path = os.path.join(losses_accs_dirs, 'test_accs_np.csv')
-
-        np.savetxt(vit_test_losses_path, test_losses_np, delimiter=',')
-        np.savetxt(vit_test_accs_path, test_accs_np, delimiter=',')
-        np.savetxt(vit_train_losses_path, train_losses_np, delimiter=',')
-        np.savetxt(vit_train_accs_path, train_accs_np, delimiter=',')
+        hfun2.save_loss_acc_to_csv(SAMPLING_METHOD, train_losses, test_losses, train_accs, test_accs)
 
         print(f'Classification accuracy per epoch for test set= {test_losses}')
         print(f'END - Fine-tuning model for {epochs} epochs took {round(((time() - all_20_epochs_start) / 60), 4)} mins')
@@ -119,7 +110,7 @@ if __name__ == '__main__':
         OTHERWISE YOU SHOULD MANUALLY CHANGE THE FILE NAMES"""
         save_fine_tuned_model = False
         if save_fine_tuned_model:
-            tuned_model_dirs = f'saved_models/pretrained_finetuned/sm_{sampling_method}'
+            tuned_model_dirs = f'saved_models/pretrained_finetuned/sm_{SAMPLING_METHOD}'
             if not os.path.exists(tuned_model_dirs): os.makedirs(tuned_model_dirs)
             fine_tuned_path = os.path.join(tuned_model_dirs, 'vit_finetuned.pt')
             torch.save(pretrained_vit.state_dict(), fine_tuned_path)
