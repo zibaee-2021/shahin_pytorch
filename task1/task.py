@@ -32,7 +32,7 @@ if __name__ == '__main__':
     # # Generate observed ("target") values, using polynomial function and Gaussian noise:
     y_true_train = hfuncs.polynomial_fun(w=w_true, x=x_train)  # This is the "true" polynomial curve  (i.e.
     # "ground-truth")
-    t_observed_train = torch.randn_like(y_true_train) * 0.5 + y_true_train  # Add Gaussian noise to simulate observed data.
+    t_observed_train = torch.randn_like(y_true_train) * 0.5 + y_true_train  # Add Gauss noise to simulate observed data.
 
     y_true_test = hfuncs.polynomial_fun(w=w_true, x=x_test)  # This is the "true" polynomial curve (i.e. "ground-truth")
     t_observed_test = torch.randn_like(y_true_test) * 0.5 + y_true_test  # Add Gaussian noise to simulate observed data.
@@ -88,7 +88,7 @@ if __name__ == '__main__':
         print(f"For m={m}, Mean & std dev of difference between the 'LS-predicted' values"
               f"and underlying 'true' polynomial curve for test set = {mean_ls_test} +/- {std_ls_test} (to 4 s.f.)")
 
-        print(f'SGD-learned weights = {w_hat_ls.numpy().ravel()}')
+        print(f'LS-learned weights = {w_hat_ls.numpy().ravel()}')
 
         # # SGD-PREDICTED ---------------------------------------------------------------------------------------------
 
