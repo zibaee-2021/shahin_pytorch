@@ -1,13 +1,31 @@
 """
 Task 3 Ablation Study
+
+Using the Image Classification tutorial, this task investigates the impact of the following modification to
+the original network. To evaluate a modification, an ablation study can be used by comparing the
+performance before and after the modification.
+• Difference between training with the two λ sampling methods in Task 2.
+• Implement a task script “task.py”, under folder “task3”, completing the following: [30]
+  - Random split the data into development set (80%) and holdout test set (20%).
+  - Random split the development set into train (90%) and validation sets (10%).
+  - Design at least one metric, other than the loss, on validation set, for monitoring during
+training.
+  - Train two models using the two different sampling methods.
+  - Report a summary of loss values, speed, metric on training and validation.
+  - Save and submit these two trained models within the task folder.
+  - Report a summary of loss values and the metrics on the holdout test set. Compare the results
+with those obtained during development.
 """
+from torch.utils.data import DataLoader, random_split
+
 import os
 from time import time
 from tqdm import tqdm
+import numpy as np
 import torch
-from torch.utils.data import DataLoader, random_split
 import torchvision.datasets as tv_datasets
 import task3_helper_functions as hfun3
+from PIL import Image
 device = torch.device('cuda' if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_available() else 'cpu')
 print(f'Using {device} device')
 
@@ -20,8 +38,8 @@ if __name__ == '__main__':
     """ ################################################# """
 
     """ CHANGE SAMPLING_METHOD TO 2 FOR UNIFORM DIST IN MIXUP """
-    SAMPLING_METHOD = 1
-    # SAMPLING_METHOD = 2
+    # SAMPLING_METHOD = 1
+    SAMPLING_METHOD = 2
     """ ##################################################### """
 
     if load_finetuned_vit_for_inference_only:  # DO NOT FINE-TUNE. JUST DO INFERENCE.
@@ -33,7 +51,7 @@ if __name__ == '__main__':
 
     batch_size = 20
     testset = tv_datasets.CIFAR10(root='./data', train=False, download=True, transform=pretrained_transforms)
-    testloader1 = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=2)
+    testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=2)
     criterion = torch.nn.CrossEntropyLoss()
     criterion = criterion.to(device)
 
@@ -43,7 +61,7 @@ if __name__ == '__main__':
     if load_finetuned_vit_for_inference_only:
         # INFERENCE (ON TEST-SET) ONLY:
         print(f'One-off inference only')
-        test_loss, test_acc, test_mins = hfun3.test_inference(device, pretrained_vit, testloader1, criterion)
+        test_loss, test_acc, test_mins = hfun3.test_inference(device, pretrained_vit, testloader, criterion)
     else:
         # FINE-TUNE & EVALUATE on 80%, EVALUATE ON 20% HOLDOUT TEST SET FOR 20 EPOCHS:
         print('20 epochs of fine-tuning and evalutation of prediction accuracy on test set, per epoch.')
@@ -85,7 +103,7 @@ if __name__ == '__main__':
             val_losses[epoch] = val_loss_per_epoch
             val_accs[epoch] = val_accuracy
             val_mins[epoch] = val_min
-            # 3. EVALUATING ON TEST AT EVERY EPOCH, NOT ASKED FOR BUT I DON'T SEE HARM IN DOING THIS AS IT'S VERY QUICK:
+            # 3. EVALUATING ON TEST AT EVERY EPOCH IS NOT ASKED FOR (BUT I DON'T SEE HARM IN DOING THIS), IT'S VERY QUICK:
             # TEST-SET AFTER EACH EPOCH OF FINE-TUNING:
             test_loss_per_epoch, test_accuracy, test_min = hfun3.test_inference(device, pretrained_vit,
                                                                                  testloader, criterion)

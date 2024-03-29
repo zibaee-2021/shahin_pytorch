@@ -2,18 +2,18 @@ import numpy as np
 import torch
 import helper_functions as hfuncs
 import time
-from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 
 
-def _plot(x_t_pairs_):
-    plt.scatter(x_t_pairs_[:, 0], x_t_pairs_[:, 1])
-    plt.title('polynomial + Gaussian noise for m=2')
-    plt.gca().spines['top'].set_visible(False)
-    plt.gca().spines['right'].set_visible(False)
-    plt.xlabel('x')
-    plt.ylabel('y')
-    # plt.savefig('plots/observed.jpg')
-    plt.show()
+# def _plot(x_t_pairs_):
+#     plt.scatter(x_t_pairs_[:, 0], x_t_pairs_[:, 1])
+#     plt.title('polynomial + Gaussian noise for m=2')
+#     plt.gca().spines['top'].set_visible(False)
+#     plt.gca().spines['right'].set_visible(False)
+#     plt.xlabel('x')
+#     plt.ylabel('y')
+#     # plt.savefig('plots/observed.jpg')
+#     plt.show()
 
 # THIS IS ABLE TO RUN ON CPU OR GPU. IT SETS THE DEVICE AUTOMATICALLY.
 

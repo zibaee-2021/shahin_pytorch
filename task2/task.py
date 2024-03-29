@@ -1,42 +1,12 @@
 """
 Task 2 A depth-wise separable convolution
-
-For the purpose of the coursework, the dataset is only split into two, training and test sets.
-
-• Adapt the Image Classification tutorial to use a different network, VisionTransformer.
-You can choose any configuration that is appropriate for this application. [5]
-
-- TensorFlow version
-- PyTorch version
-
-• Implement a data augmentation class MixUp, using the mixup algorithm, such that: [10]
-  - Inherited from the relevant classes in TensorFlow/PyTorch is recommended but not assessed.
-  - The MixUp algorithm can be applied to images and labels in each training iteration.
-  - Have an input flag “sampling_method” and appropriate hyperparameters for two options:
-▪ sampling_method = 1: λ is sampled from a beta distribution as described in the paper.
-▪ sampling_method = 2: λ is sampled uniformly from a predefined range.
-▪ The algorithm should be seeded for reproducible results.
-  - Visualise your implementation, by saving to a PNG file “mixup.png”, a montage of 16 images
-with randomly augmented images that are about to be fed into network training.
-  - Note: the intention of this task is to implement the augmentation class from scratch using
-only TensorFlow/PyTorch basic API functions. Using the built-in data augmentation classes
-may result in losing all relevant marks.
-• Implement a task script “task.py”, under folder “task2”, completing the following: [15]
-  - Train a new VisionTransformer classification network with MixUp data augmentation, for
-each of the two sampling methods, with 20 epochs.
-  - Save the two trained models and submit your trained models within the task folder.
-  - Report the test set performance in terms of classification accuracy versus the epochs.
-  - Visualise your results, by saving to a PNG file “result.png”, a montage of 36 test images with
-printed messages clearly indicating the ground-truth and the predicted classes for each.
 """
 import os
 from time import time
 from tqdm import tqdm
-import numpy as np
 import torch
 import torchvision.datasets as tv_datasets
 import task2_helper_functions as hfun2
-from PIL import Image
 device = torch.device('cuda' if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_available() else 'cpu')
 print(f'Using {device} device')
 

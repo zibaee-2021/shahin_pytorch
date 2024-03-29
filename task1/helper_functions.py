@@ -2,7 +2,7 @@ import numpy as np
 import torch
 from torch import optim, nn
 from torch.utils.data import DataLoader, TensorDataset
-from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 from math import floor, log10
 
 
@@ -127,7 +127,7 @@ def fit_polynomial_sgd(x_t_pairs: torch.Tensor, m: int, lr=0.0001, mb_size=2) ->
         losses.append(loss.item())
         if epoch % print_epochs == 0:
             print(f'Epoch [{epoch + 1} / {num_epochs}], Loss: {round_sig_figs(to_round=loss.item(), sf=4)} (to 4 s.f.)')
-    _plot_losses(losses, num_epochs, lr=lr, momentum=momentum, mb_size=mb_size, gc_max_norm=gc_max_norm)
+    # _plot_losses(losses, num_epochs, lr=lr, momentum=momentum, mb_size=mb_size, gc_max_norm=gc_max_norm)
     return model.weights.data
 
 
@@ -200,7 +200,7 @@ def fit_polynomial_sgd_and_test(x_t_test_set_pairs: torch.Tensor, x_t_pairs: tor
         print(f'Epoch [{epoch + 1} / {num_epochs}], Loss: '
               f'{round_sig_figs(to_round=loss.item(), sf=4)}, Test Loss: {round_sig_figs(to_round=test_loss.item(), sf=4)}')
         test_losses.append(test_loss.item())
-    _plot_test_train_losses(test_losses, losses, num_epochs, lr=lr, momentum=momentum, mb_size=mb_size, gc_max_norm=gc_max_norm)
+    # _plot_test_train_losses(test_losses, losses, num_epochs, lr=lr, momentum=momentum, mb_size=mb_size, gc_max_norm=gc_max_norm)
     return model.weights.data
 
 
@@ -239,41 +239,41 @@ def round_sig_figs(to_round: float, sf: int) -> float:
     return rounded_x
 
 
-def _plot_losses(losses, num_epochs: int, lr: float, momentum: float, mb_size: int, gc_max_norm: float):
-    losses = np.array(losses)
-    epochs = np.arange(1, num_epochs + 1)
-    _, ax = plt.subplots()
-    ax.set_xlim(1, num_epochs + 1)
-    # ax.set_ylim(0, 100)
-    plt.title(f'num_epochs={num_epochs}, lr={lr}, momentum={momentum}, mb_size={mb_size}, \n'
-              f'gc_max_norm={gc_max_norm}')
-    ax.scatter(epochs, losses, color='red', s=10)
-    ax.plot(epochs, losses)
-    plt.xlabel('epoch')
-    plt.ylabel(f'Loss')
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    plt.show()
+# def _plot_losses(losses, num_epochs: int, lr: float, momentum: float, mb_size: int, gc_max_norm: float):
+#     losses = np.array(losses)
+#     epochs = np.arange(1, num_epochs + 1)
+#     _, ax = plt.subplots()
+#     ax.set_xlim(1, num_epochs + 1)
+#     # ax.set_ylim(0, 100)
+#     plt.title(f'num_epochs={num_epochs}, lr={lr}, momentum={momentum}, mb_size={mb_size}, \n'
+#               f'gc_max_norm={gc_max_norm}')
+#     ax.scatter(epochs, losses, color='red', s=10)
+#     ax.plot(epochs, losses)
+#     plt.xlabel('epoch')
+#     plt.ylabel(f'Loss')
+#     ax.spines['top'].set_visible(False)
+#     ax.spines['right'].set_visible(False)
+#     plt.show()
 
 
-def _plot_test_train_losses(test_losses, train_losses, num_epochs: int, lr: float, momentum: float, mb_size: int, gc_max_norm: float):
-    train_losses = np.array(train_losses)
-    test_losses = np.array(test_losses)
-    epochs = np.arange(1, num_epochs + 1)
-    _, ax = plt.subplots()
-    ax.set_xlim(1, num_epochs + 1)
-    # ax.set_ylim(0, 1000000)
-    plt.title(f'num_epochs={num_epochs}, lr={lr}, momentum={momentum}, mb_size={mb_size}, \n'
-              f'gc_max_norm={gc_max_norm}')
-    ax.scatter(epochs, train_losses, label='train', color='blue', s=10)
-    ax.scatter(epochs, test_losses, label='test', color='red', s=10)
-
-    ax.plot(epochs, train_losses, color='lightblue')
-    ax.plot(epochs, test_losses, color='salmon')
-
-    plt.xlabel('epoch')
-    plt.ylabel(f'Losses')
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    plt.legend()
-    plt.show()
+# def _plot_test_train_losses(test_losses, train_losses, num_epochs: int, lr: float, momentum: float, mb_size: int, gc_max_norm: float):
+#     train_losses = np.array(train_losses)
+#     test_losses = np.array(test_losses)
+#     epochs = np.arange(1, num_epochs + 1)
+#     _, ax = plt.subplots()
+#     ax.set_xlim(1, num_epochs + 1)
+#     # ax.set_ylim(0, 1000000)
+#     plt.title(f'num_epochs={num_epochs}, lr={lr}, momentum={momentum}, mb_size={mb_size}, \n'
+#               f'gc_max_norm={gc_max_norm}')
+#     ax.scatter(epochs, train_losses, label='train', color='blue', s=10)
+#     ax.scatter(epochs, test_losses, label='test', color='red', s=10)
+#
+#     ax.plot(epochs, train_losses, color='lightblue')
+#     ax.plot(epochs, test_losses, color='salmon')
+#
+#     plt.xlabel('epoch')
+#     plt.ylabel(f'Losses')
+#     ax.spines['top'].set_visible(False)
+#     ax.spines['right'].set_visible(False)
+#     plt.legend()
+#     plt.show()
