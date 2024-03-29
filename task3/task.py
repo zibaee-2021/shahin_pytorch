@@ -51,7 +51,7 @@ if __name__ == '__main__':
 
     batch_size = 20
     testset = tv_datasets.CIFAR10(root='./data', train=False, download=True, transform=pretrained_transforms)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=2)
+    testloader1 = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=2)
     criterion = torch.nn.CrossEntropyLoss()
     criterion = criterion.to(device)
 
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     if load_finetuned_vit_for_inference_only:
         # INFERENCE (ON TEST-SET) ONLY:
         print(f'One-off inference only')
-        test_loss, test_acc, test_mins = hfun3.test_inference(device, pretrained_vit, testloader, criterion)
+        test_loss, test_acc, test_mins = hfun3.test_inference(device, pretrained_vit, testloader1, criterion)
     else:
         # FINE-TUNE & EVALUATE on 80%, EVALUATE ON 20% HOLDOUT TEST SET FOR 20 EPOCHS:
         print('20 epochs of fine-tuning and evalutation of prediction accuracy on test set, per epoch.')
@@ -75,7 +75,7 @@ if __name__ == '__main__':
         trainset, validationset = random_split(trainset, [train_size, validation_size])
         trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=2)
         validationloader = torch.utils.data.DataLoader(validationset, batch_size=batch_size, shuffle=False, num_workers=2)
-        testloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=False, num_workers=2)
+        testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=2)
 
         opt = torch.optim.Adam(pretrained_vit.parameters(), lr=0.003)
         epochs = 20
@@ -103,7 +103,7 @@ if __name__ == '__main__':
             val_losses[epoch] = val_loss_per_epoch
             val_accs[epoch] = val_accuracy
             val_mins[epoch] = val_min
-            # 3. EVALUATING ON TEST AT EVERY EPOCH IS NOT ASKED FOR (BUT I DON'T SEE HARM IN DOING THIS), IT'S VERY QUICK:
+            # 3. EVALUATING ON TEST AT EVERY EPOCH, NOT ASKED FOR BUT I DON'T SEE HARM IN DOING THIS AS IT'S VERY QUICK:
             # TEST-SET AFTER EACH EPOCH OF FINE-TUNING:
             test_loss_per_epoch, test_accuracy, test_min = hfun3.test_inference(device, pretrained_vit,
                                                                                  testloader, criterion)
